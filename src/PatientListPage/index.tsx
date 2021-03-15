@@ -8,6 +8,7 @@ import { Patient } from "../types";
 import { apiBaseUrl } from "../constants";
 import HealthRatingBar from "../components/HealthRatingBar";
 import { useStateValue } from "../state";
+import { Link } from "react-router-dom";
 
 const PatientListPage = () => {
   const [{ patients }, dispatch] = useStateValue();
@@ -44,6 +45,7 @@ const PatientListPage = () => {
       <Table celled>
         <Table.Header>
           <Table.Row>
+            {/* <Table.HeaderCell>Name</Table.HeaderCell> */}
             <Table.HeaderCell>Name</Table.HeaderCell>
             <Table.HeaderCell>Gender</Table.HeaderCell>
             <Table.HeaderCell>Occupation</Table.HeaderCell>
@@ -53,7 +55,8 @@ const PatientListPage = () => {
         <Table.Body>
           {Object.values(patients).map((patient: Patient) => (
             <Table.Row key={patient.id}>
-              <Table.Cell>{patient.name}</Table.Cell>
+              {/* <Table.Cell>{patient.name}</Table.Cell> */}
+              <Table.Cell><Link to={`/patients/${patient.id}`}>{patient.name}</Link></Table.Cell>
               <Table.Cell>{patient.gender}</Table.Cell>
               <Table.Cell>{patient.occupation}</Table.Cell>
               <Table.Cell>

@@ -7,7 +7,8 @@ import { apiBaseUrl } from "./constants";
 import { useStateValue } from "./state";
 import { Patient } from "./types";
 
-import PatientListPage from "./PatientListPage";
+import PatientListPage from "./PatientListPage/index";
+import PatientPage from "./PatientPage/index";
 
 const App = () => {
   const [, dispatch] = useStateValue();
@@ -20,6 +21,7 @@ const App = () => {
           `${apiBaseUrl}/patients`
         );
         dispatch({ type: "SET_PATIENT_LIST", payload: patientListFromApi });
+        console.log(patientListFromApi);
       } catch (e) {
         console.error(e);
       }
@@ -35,9 +37,12 @@ const App = () => {
           <Button as={Link} to="/" primary>
             Home
           </Button>
-          <Divider hidden />
+          <Divider style={{marginBottom:40}} />          
           <Switch>
             <Route path="/patients/:id">
+              <PatientPage />
+            </Route>
+            <Route path="/" >
               <PatientListPage />
             </Route>
           </Switch>

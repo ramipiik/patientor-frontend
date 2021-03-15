@@ -9,6 +9,10 @@ export type Action =
   | {
       type: "ADD_PATIENT";
       payload: Patient;
+    }
+    | {
+      type: "UPDATE_PATIENT";
+      payload: Patient;
     };
 
 export const reducer = (state: State, action: Action): State => {
@@ -32,6 +36,17 @@ export const reducer = (state: State, action: Action): State => {
           [action.payload.id]: action.payload
         }
       };
+      case "UPDATE_PATIENT":
+        const patient = state.patients[action.payload.id];
+        patient.ssn = action.payload.ssn;
+        state.patients[action.payload.id]=patient; //näin ei ymmärtääkseni saisi tehdä, mutta tuo spread-syntaksin & funktionaaliseten operaattoreiden käyttö ei nyt oikein irtoa..
+
+        return {
+          ...state,
+          patients: {
+            ...state.patients
+          }
+        };
     default:
       return state;
   }
