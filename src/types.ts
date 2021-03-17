@@ -20,6 +20,12 @@ export interface Patient {
   entries: Entry[]
 }
 
+export interface Diagnose {
+  code: string,
+  name: string,
+  latin?: string
+}
+
 export type Entry =  HospitalEntry | OccupationalHealthCareEntry | HealthCheckEntry;
 
 interface BaseEntry {

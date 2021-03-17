@@ -21,8 +21,14 @@ const fetchPatientInfo = async (id:string) => {
     }
 };
 
+
+
+
 const PatientPage = () => {
     const [{ patients }, ] = useStateValue();
+    const [{ diagnosis }, ] = useStateValue();
+    console.log(diagnosis);
+    console.log(patients);
     const { id } = useParams<{ id: string }>();
     const patient = patients[id];
     if (patient.ssn) {
@@ -34,11 +40,11 @@ const PatientPage = () => {
     
     const diagnosisCodes = (codes:string[]) => {
         return (
-            <div>
+            <ul>
                  {codes.map(code => 
-                <div key={code}>{code} </div>
+                <li key={code}>{code}: {diagnosis[code].name}</li>
             )}
-            </div>
+            </ul>
         );
     };
 
@@ -48,7 +54,7 @@ const PatientPage = () => {
             ssn: {patient.ssn}<br></br>
             occupation: {patient.occupation}
             <br></br><br></br>
-            <div style={{marginBottom:-10}}><b>Entries:</b></div>
+            {patient.entries.length>0 && <div style={{marginBottom:-10}}><b>Entries:</b></div>}
             {patient.entries.map(entry => 
                 <ul style={{marginTop:15}} key={entry.id}>
                  <li>Date: {entry.date}</li>
