@@ -3,17 +3,39 @@ import { Patient } from "../types";
 
 export type Action =
   | {
-      type: "SET_PATIENT_LIST";
-      payload: Patient[];
-    }
+    type: "SET_PATIENT_LIST";
+    payload: Patient[];
+  }
   | {
-      type: "ADD_PATIENT";
-      payload: Patient;
-    }
-    | {
-      type: "UPDATE_PATIENT";
-      payload: Patient;
-    };
+    type: "ADD_PATIENT";
+    payload: Patient;
+  }
+  | {
+    type: "UPDATE_PATIENT";
+    payload: Patient;
+  };
+
+export const setPatientList = (patientList: Patient[]): Action => {
+  return {
+    type: "SET_PATIENT_LIST",
+    payload: patientList
+  };
+};
+
+export const addPatient = (patient: Patient): Action => {
+  return {
+    type: "ADD_PATIENT",
+    payload: patient
+  };
+};
+
+export const updatePatient = (patient: Patient): Action => {
+  return {
+    type: "UPDATE_PATIENT",
+    payload: patient
+  };
+};
+
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -36,17 +58,17 @@ export const reducer = (state: State, action: Action): State => {
           [action.payload.id]: action.payload
         }
       };
-      case "UPDATE_PATIENT":
-        const patient = state.patients[action.payload.id];
-        patient.ssn = action.payload.ssn;
-        state.patients[action.payload.id]=patient; //näin ei ymmärtääkseni saisi tehdä, mutta tuo spread-syntaksin & funktionaaliseten operaattoreiden käyttö ei nyt oikein irtoa..
+    case "UPDATE_PATIENT":
+      const patient = state.patients[action.payload.id];
+      patient.ssn = action.payload.ssn;
+      state.patients[action.payload.id] = patient; //näin ei ymmärtääkseni saisi tehdä, mutta tuo spread-syntaksin & funktionaaliseten operaattoreiden käyttö ei nyt oikein irtoa..
 
-        return {
-          ...state,
-          patients: {
-            ...state.patients
-          }
-        };
+      return {
+        ...state,
+        patients: {
+          ...state.patients
+        }
+      };
     default:
       return state;
   }
