@@ -32,6 +32,16 @@ const PatientPage = () => {
         void fetchPatientInfo(id);      
     }
     
+    const diagnosisCodes = (codes:string[]) => {
+        return (
+            <div>
+                 {codes.map(code => 
+                <div key={code}>{code} </div>
+            )}
+            </div>
+        );
+    };
+
     return (
         <div>
             <h1>{patient.name} {patient.gender=='male' && <Icon name='mars'/>} {patient.gender=='female' && <Icon name='venus'/>}</h1>
@@ -44,6 +54,8 @@ const PatientPage = () => {
                  <li>Date: {entry.date}</li>
                  <li>Type: {entry.type}</li>
                  <li>Description: {entry.description}</li>
+                 {/* {entry.diagnosisCodes && <li>Diagnosis codes: {entry.diagnosisCodes}</li>} */}
+                 {entry.diagnosisCodes && <li>Diagnosis codes: {diagnosisCodes (entry.diagnosisCodes)}</li>}
             </ul>
             )}
         </div>
