@@ -13,6 +13,8 @@ interface Props {
   onCancel: () => void;
 }
 
+const pvm = new Date();
+const date = String(pvm.getDate())+'.'+String(pvm.getMonth())+'.'+String(pvm.getFullYear());
 
 export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
     const min = 0;
@@ -20,7 +22,7 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
     return (
       <Formik
         initialValues={{
-          date: "",
+          date: date,
           specialist: "",
           description: "",
           type: EntryType.HealthCheck
