@@ -1,51 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { Grid, Button } from "semantic-ui-react";
-import { Field, Formik } from "formik";
-import { Form } from "semantic-ui-react";
+import { Field, Formik, Form } from "formik";
 import { TextField, NumberField } from "../AddPatientModal/FormField";
 import { EntryType, EntryFormValues } from "../types";
-
+import { entryTypeOptions, SelectField } from "./Components";
 
 interface Props {
   onSubmit: (values: EntryFormValues) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   onSubmit: (values: any) => void;
   onCancel: () => void;
 }
 
-// structure of a single option
-type EntryTypeOption = {
-    value: EntryType;
-    label: string;
-  };
-  
-  // props for select field component
-  type SelectFieldProps = {
-    name: string;
-    label: string;
-    options: EntryTypeOption[];
-  };
-
-const entryTypeOptions: EntryTypeOption[] = [
-    { value: EntryType.HealthCheck, label: "Health check" },
-    { value: EntryType.Hospital, label: "Hospital" },
-    { value: EntryType.OccupationalHealthcare, label: "Occupational health care" }
-  ];
-
-const SelectField = ({
-    name,
-    label,
-    options
-  }: SelectFieldProps) => (
-    <Form.Field>
-      <label>{label}</label>
-      <Field as="select" name={name} className="ui dropdown">
-        {options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label || option.value}
-          </option>
-        ))}
-      </Field>
-    </Form.Field>
-  );
 
 export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
     const min = 0;
@@ -56,6 +23,7 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
           date: "",
           specialist: "",
           description: "",
+          type: EntryType.HealthCheck
         }}
         onSubmit={onSubmit}
         validate={values => {
@@ -63,6 +31,9 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
           const errors: { [field: string]: string } = {};
           if (!values.date) {
             errors.date = requiredError;
+          }
+          if (!values.type) {
+            errors.type = requiredError;
           }
           if (!values.specialist) {
             errors.specialist = requiredError;
@@ -73,12 +44,12 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
           if (!values.healthCheckRating ) {
             errors.healthCheckRating = requiredError;
           }
-        //   if (values.healthCheckRating<0 ) {
-        //     errors.healthCheckRating = "minimum value is 0";
-        //   }
-        //   if (values.healthCheckRating>1 ) {
-        //     errors.healthCheckRating = "maximum value is 1";
-        //   }
+          if (values.healthCheckRating && values.healthCheckRating<-1) {
+            errors.healthCheckRating = "minimum value is 0";
+          }
+          if (values.healthCheckRating && values.healthCheckRating>10 ) {
+            errors.healthCheckRating = "maximum value is 10";
+          }
           return errors;
         }}
       >
@@ -87,8 +58,9 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
             <Form className="form ui">
               <SelectField
                 label="Entry type"
-                name="entryType"
-                options={entryTypeOptions}
+                // name="entryType"
+                name="type"
+                options={entryTypeOptions}                
               />
               <Field
                 label="Date"
@@ -110,7 +82,7 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
               />
               <Field
                 label="Healthcheck rating"
-                placeholder="0-1"
+                placeholder="0-10"
                 name="healthCheckRating"
                 min={min}
                 max={max}

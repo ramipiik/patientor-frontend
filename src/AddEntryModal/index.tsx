@@ -8,7 +8,7 @@ interface Props {
   modalOpen: boolean;
   onClose: () => void;
   onSubmit: (values: EntryFormValues) => void;
- // onSubmit: () => void;
+//  onSubmit: () => void;
   error?: string;
 }
 

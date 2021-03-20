@@ -45,7 +45,8 @@ export interface BaseEntry {
 type EntryFormValuesHelper = Omit<BaseEntry, "id" | "diagnosisCodes">;
 
 export interface EntryFormValues extends EntryFormValuesHelper {
-  healthCheckRating?: number
+  healthCheckRating?: number,
+  type: string 
 } 
 
 export interface ToNewEntry extends EntryFormValues {

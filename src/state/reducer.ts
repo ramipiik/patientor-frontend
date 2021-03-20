@@ -81,9 +81,10 @@ export const reducer = (state: State, action: Action): State => {
         }
       };
     case "UPDATE_PATIENT":
-      const patient = state.patients[action.payload.id];
-      patient.ssn = action.payload.ssn;
-      state.patients[action.payload.id] = patient; //näin ei ymmärtääkseni saisi tehdä, mutta tuo spread-syntaksin & funktionaaliseten operaattoreiden käyttö ei nyt oikein irtoa..
+      console.log("ollaan update patient reducerissa");
+     const patient = state.patients[action.payload.id];
+     console.log(patient);
+      state.patients[action.payload.id] = action.payload; //näin ei ymmärtääkseni saisi tehdä, mutta tuo spread-syntaksin & funktionaaliseten operaattoreiden käyttö ei nyt oikein irtoa..
 
       return {
         ...state,

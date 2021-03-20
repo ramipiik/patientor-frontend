@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-
-import React from "react";
+import React, {useEffect} from "react";
 import { useParams } from "react-router-dom";
 import { Patient, Entry, HealthCheckEntry, OccupationalHealthCareEntry, HospitalEntry, EntryFormValues, ToNewEntry } from "../types";
 import axios from "axios";
@@ -13,45 +12,54 @@ import AddEntryModal from "../AddEntryModal";
 import {v1 as uuid} from 'uuid';
 
 
-const fetchPatientInfo = async (id:string) => {
-    const [, dispatch] = useStateValue();
-    try {
-      const { data: patientInfoFromApi } = await axios.get<Patient>(
-        `${apiBaseUrl}/patients/${id}`
-      );
-      //dispatch({ type: "UPDATE_PATIENT", payload: patientInfoFromApi });
-      dispatch(updatePatient(patientInfoFromApi));
-    } catch (e) {
-      console.error(e);
-    }
-};
-
 const PatientPage = () => {
     const [{ patients }, ] = useStateValue();
     const [{ diagnosis }, ] = useStateValue();
-    console.log(diagnosis);
-    console.log(patients);
     const { id } = useParams<{ id: string }>();
     const patient = patients[id];
-    
+ 
+    const [, dispatch] = useStateValue();
+    const fetchPatientInfo = async (id:string) => {
+        try {
+          const { data: patientInfoFromApi } = await axios.get<Patient>(
+            `${apiBaseUrl}/patients/${id}`
+          );
+          dispatch(updatePatient(patientInfoFromApi));
+        } catch (e) {
+          console.error(e);
+        }
+    };
 
-   
-    if (patient.ssn) {
+    const submitNewEntry = async (values: EntryFormValues) => {
+        const entryId:string = uuid();
+        const values2 = {...values, entryId};
+        try {
+        const newEntry =  await axios.post<ToNewEntry>(
+            `${apiBaseUrl}/patients/${id}/entries`,
+            values2
+        );
+        const newEntry2:Patient = newEntry.data as unknown as Patient;
+        dispatch(updatePatient(newEntry2));
+        closeModal();
+        } catch (e) {
+        console.error(e.response?.data || 'Unknown Error');
+        setError(e.response?.data?.error || 'Unknown error');
+        }
+  };
+    
+    if (patient.ssn && patient.ssn !="") {
         console.log('ssn on olemassa');
     } else {
         console.log('ei ole vielä ssn:ää. pitää hakea!');
         void fetchPatientInfo(id);      
     }
-
-
-    
+  
     const diagnosisCodes = (codes:string[]) => {
         return (
             <ul >
                 <div style={{marginBottom: -12}}>  </div>
                  {codes.map(code => 
-                <li key={code}>{code}: {diagnosis[code].name}</li>
-               
+                <li key={code}>{code}: {diagnosis[code].name}</li>               
             )}
             </ul>
         );
@@ -100,8 +108,6 @@ const PatientPage = () => {
     };
 
     const HealthCheckEntry = ({ entry }: { entry: HealthCheckEntry }) => {
-
-
         const color = (input:number): "orange"|"green" =>  {
             if (input==0) {
                 return "orange";
@@ -164,47 +170,23 @@ const PatientPage = () => {
       };
     
 
-      const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+    const [modalOpen, setModalOpen] = React.useState<boolean>(false);
     const [error, setError] = React.useState<string | undefined>();
 
     const openModal = (): void => {
-    console.log(`modalOpen:`, modalOpen);
-    setModalOpen(true);
-    console.log(`modalOpen:`, modalOpen);
+        console.log(`modalOpen:`, modalOpen);
+        setModalOpen(true);
+        console.log(`modalOpen:`, modalOpen);
   };
 
   const closeModal = (): void => {
     setModalOpen(false);
     setError(undefined);
+    console.log('suljetaan!');
   };
 
 
-    // const testSubmit = () => {
-    //     console.log("moi!");
-    // };
 
-    const submitNewEntry = async (values: EntryFormValues) => {
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const entryId:string = uuid();
-    const values2 = {...values, entryId};
-    
-    console.log('Trying to send following data to BE:');
-    console.log(values2);
-    try {
-      const { data: newEntry } = await axios.post<ToNewEntry>(
-        `${apiBaseUrl}/patients/${id}/entries`,
-        values2
-      );
-      console.log('response from BE');
-      console.log(newEntry);
-      //dispatch(addEntry(newEntry)); //pitääkö tehdä entryjen tilan hallinta fronttiin? Ei varmaan tarvii. 
-      closeModal();
-    } catch (e) {
-      console.error(e.response?.data || 'Unknown Error');
-      setError(e.response?.data?.error || 'Unknown error');
-    }
-  };
 
     return (
         <div>
@@ -221,9 +203,10 @@ const PatientPage = () => {
                     <EntryDetails entry={entry} />
                 </div>
             )}
+
         <AddEntryModal
           modalOpen={modalOpen}
-          onSubmit={() => console.log("moi")}
+          onSubmit={submitNewEntry}
           error={error}
           onClose={closeModal}
       />
