@@ -179,7 +179,7 @@ const PatientPage = () => {
 
 
   const submitNewEntry = ():void => {
-      //this will send the new entry to the BE endpoitn
+      //write the code here to send the new entry to the BE endpoint
       console.log('to do: Send the data to BE');
   };
 
