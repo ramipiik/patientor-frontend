@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { Modal, Segment } from 'semantic-ui-react';
 import AddEntryForm from './AddEntryForm';
@@ -7,6 +8,7 @@ interface Props {
   modalOpen: boolean;
   onClose: () => void;
   onSubmit: (values: EntryFormValues) => void;
+ // onSubmit: () => void;
   error?: string;
 }
 

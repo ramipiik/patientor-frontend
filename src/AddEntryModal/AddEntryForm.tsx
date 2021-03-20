@@ -2,21 +2,14 @@ import React from "react";
 import { Grid, Button } from "semantic-ui-react";
 import { Field, Formik } from "formik";
 import { Form } from "semantic-ui-react";
-import { TextField } from "../AddPatientModal/FormField";
-import { EntryFormValues, Gender, EntryType } from "../types";
+import { TextField, NumberField } from "../AddPatientModal/FormField";
+import { EntryType, EntryFormValues } from "../types";
 
 
 interface Props {
   onSubmit: (values: EntryFormValues) => void;
   onCancel: () => void;
 }
-
-// const genderOptions: GenderOption[] = [
-//   { value: Gender.Male, label: "Male" },
-//   { value: Gender.Female, label: "Female" },
-//   { value: Gender.Other, label: "Other" }
-// ];
-
 
 // structure of a single option
 type EntryTypeOption = {
@@ -55,14 +48,14 @@ const SelectField = ({
   );
 
 export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
+    const min = 0;
+    const max = 10;
     return (
       <Formik
         initialValues={{
           date: "",
           specialist: "",
           description: "",
-          healthCheckRating: "",
-          gender: Gender.Other
         }}
         onSubmit={onSubmit}
         validate={values => {
@@ -77,9 +70,15 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
           if (!values.description) {
             errors.description = requiredError;
           }
-          if (!values.healthCheckRating) {
+          if (!values.healthCheckRating ) {
             errors.healthCheckRating = requiredError;
           }
+        //   if (values.healthCheckRating<0 ) {
+        //     errors.healthCheckRating = "minimum value is 0";
+        //   }
+        //   if (values.healthCheckRating>1 ) {
+        //     errors.healthCheckRating = "maximum value is 1";
+        //   }
           return errors;
         }}
       >
@@ -111,9 +110,11 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
               />
               <Field
                 label="Healthcheck rating"
-                placeholder="0 / 1"
+                placeholder="0-1"
                 name="healthCheckRating"
-                component={TextField}
+                min={min}
+                max={max}
+                component={NumberField}
               />
               <Grid>
                 <Grid.Column floated="left" width={5}>

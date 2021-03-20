@@ -1,15 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Patient, Entry, HealthCheckEntry, OccupationalHealthCareEntry, HospitalEntry } from "../types";
+import { Patient, Entry, HealthCheckEntry, OccupationalHealthCareEntry, HospitalEntry, EntryFormValues, ToNewEntry } from "../types";
 import axios from "axios";
 import { apiBaseUrl } from "../constants";
 import { useStateValue } from "../state";
 import {updatePatient} from "../state/reducer";
 import { Icon, Table, Container, Button } from 'semantic-ui-react';
 import AddEntryModal from "../AddEntryModal";
+import {v1 as uuid} from 'uuid';
 
 
 const fetchPatientInfo = async (id:string) => {
@@ -178,9 +179,31 @@ const PatientPage = () => {
   };
 
 
-  const submitNewEntry = ():void => {
-      //write the code here to send the new entry to the BE endpoint
-      console.log('to do: Send the data to BE');
+    // const testSubmit = () => {
+    //     console.log("moi!");
+    // };
+
+    const submitNewEntry = async (values: EntryFormValues) => {
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const entryId:string = uuid();
+    const values2 = {...values, entryId};
+    
+    console.log('Trying to send following data to BE:');
+    console.log(values2);
+    try {
+      const { data: newEntry } = await axios.post<ToNewEntry>(
+        `${apiBaseUrl}/patients/${id}/entries`,
+        values2
+      );
+      console.log('response from BE');
+      console.log(newEntry);
+      //dispatch(addEntry(newEntry)); //pitääkö tehdä entryjen tilan hallinta fronttiin? Ei varmaan tarvii. 
+      closeModal();
+    } catch (e) {
+      console.error(e.response?.data || 'Unknown Error');
+      setError(e.response?.data?.error || 'Unknown error');
+    }
   };
 
     return (
@@ -200,7 +223,7 @@ const PatientPage = () => {
             )}
         <AddEntryModal
           modalOpen={modalOpen}
-          onSubmit={submitNewEntry}
+          onSubmit={() => console.log("moi")}
           error={error}
           onClose={closeModal}
       />

@@ -60,12 +60,13 @@ interface NumberProps extends FieldProps {
   errorMessage?: string;
   min: number;
   max: number;
+  placeholder: string
 }
 
-export const NumberField = ({ field, label, min, max } : NumberProps ) => (
+export const NumberField = ({ field, label, min, max, placeholder } : NumberProps ) => (
   <Form.Field>
     <label>{label}</label>
-    <Field {...field} type='number' min={min} max={max} />
+    <Field {...field} type='number' min={min} max={max} placeholder={placeholder} />
 
     <div style={{ color:'red' }}>
       <ErrorMessage name={field.name} />
