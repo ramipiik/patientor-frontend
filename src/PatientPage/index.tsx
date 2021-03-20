@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import React from "react";
 import { useParams } from "react-router-dom";
 import { Patient, Entry, HealthCheckEntry, OccupationalHealthCareEntry, HospitalEntry } from "../types";
@@ -5,7 +8,8 @@ import axios from "axios";
 import { apiBaseUrl } from "../constants";
 import { useStateValue } from "../state";
 import {updatePatient} from "../state/reducer";
-import { Icon, Table, Container } from 'semantic-ui-react';
+import { Icon, Table, Container, Button } from 'semantic-ui-react';
+import AddEntryModal from "../AddEntryModal";
 
 
 const fetchPatientInfo = async (id:string) => {
@@ -21,9 +25,6 @@ const fetchPatientInfo = async (id:string) => {
     }
 };
 
-
-
-
 const PatientPage = () => {
     const [{ patients }, ] = useStateValue();
     const [{ diagnosis }, ] = useStateValue();
@@ -31,18 +32,25 @@ const PatientPage = () => {
     console.log(patients);
     const { id } = useParams<{ id: string }>();
     const patient = patients[id];
+    
+
+   
     if (patient.ssn) {
         console.log('ssn on olemassa');
     } else {
         console.log('ei ole vielä ssn:ää. pitää hakea!');
         void fetchPatientInfo(id);      
     }
+
+
     
     const diagnosisCodes = (codes:string[]) => {
         return (
-            <ul>
+            <ul >
+                <div style={{marginBottom: -12}}>  </div>
                  {codes.map(code => 
                 <li key={code}>{code}: {diagnosis[code].name}</li>
+               
             )}
             </ul>
         );
@@ -51,20 +59,18 @@ const PatientPage = () => {
     const HospitalEntry = ({ entry }: { entry: HospitalEntry }) => {
         return (
             <div>
-            <Table>
-                <Table.Body>
-                    <ul style={{marginTop:10}} key={entry.id}>
-                    <Table.Row>
-                        <Icon style={{marginLeft:-25, marginBottom:10}} name='hospital' size="large"/> <b>{entry.type}</b>
+            <Table style={{paddingLeft:15, paddingTop:10, paddingBottom:10}}>
+                <Table.Body style={{paddingLeft:15}}>
+                    <Table.Row style={{marginTop:10, paddingLeft:15}}>
+                        <Icon style={{marginLeft:0, marginBottom:10}} name='hospital' size="large"/> {entry.type}
                     </Table.Row>
                     <Table.Row>
-                        <li>Date: {entry.date}</li>
+                        - Date: {entry.date}
                     </Table.Row>
                     <Table.Row>
-                        <li>Description: {entry.description}</li>
-                        {entry.diagnosisCodes && <li>Diagnosis codes: {diagnosisCodes (entry.diagnosisCodes)}</li>}
+                        - Description: {entry.description}
+                        {entry.diagnosisCodes && <div>- Diagnosis codes: {diagnosisCodes (entry.diagnosisCodes)}</div>}
                     </Table.Row>
-                </ul>
                 </Table.Body>
             </Table>
         </div>
@@ -74,20 +80,18 @@ const PatientPage = () => {
     const OccupationalHealthCareEntry = ({ entry }: { entry: OccupationalHealthCareEntry }) => {
         return (
             <div>
-                <Table>
+                <Table style={{paddingLeft:15, paddingTop:10, paddingBottom:10}}>
                     <Table.Body>
-                      <ul style={{marginTop:15}} key={entry.id}>
-                    <Table.Row>
-                        <li>Type: {entry.type} <Icon style={{marginLeft:10}} name='factory' size="large"/></li>
+                    <Table.Row style={{marginTop:15}}>
+                            Type: {entry.type} <Icon style={{marginLeft:10}} name='factory' size="large"/>
                     </Table.Row>
                     <Table.Row>
-                        <li>Date: {entry.date}</li>
+                        - Date: {entry.date}
                     </Table.Row>
                     <Table.Row>
-                        <li>Description: {entry.description}</li>
-                        {entry.diagnosisCodes && <li>Diagnosis codes: {diagnosisCodes (entry.diagnosisCodes)}</li>}
+                        - Description: {entry.description}
+                        {entry.diagnosisCodes && <div>- Diagnosis codes: {diagnosisCodes (entry.diagnosisCodes)}</div>}
                     </Table.Row>
-                 </ul>
                 </Table.Body>
             </Table>
         </div>
@@ -107,22 +111,20 @@ const PatientPage = () => {
 
         return (
             <div>
-                <Table>
+                <Table style={{paddingLeft:15, paddingTop:10, paddingBottom:10}}>
                     <Table.Body>
-                    <ul style={{marginTop:15}} key={entry.id}>
-                        <Table.Row>
-                            <li>Type: {entry.type} <Icon style={{marginLeft:10}} name='clock outline' size="large"/></li>
+                        <Table.Row style={{marginTop:15}}>
+                            Type: {entry.type} <Icon style={{marginLeft:10}} name='clock outline' size="large"/>
                         </Table.Row>
                         <Table.Row>
-                            <li>Date: {entry.date}</li>
+                            - Date: {entry.date}
                         </Table.Row>
                         <Table.Row>
-                            <li>Description: {entry.description}</li>
+                            - Description: {entry.description}
                         </Table.Row>
                         <Table.Row>
-                            <li>Health check rating: {entry.healthCheckRating} <Icon name="heart" color={color(entry.healthCheckRating)}/></li>
+                            - Health check rating: {entry.healthCheckRating} <Icon name="heart" color={color(entry.healthCheckRating)}/>
                         </Table.Row>
-                    </ul>
                     </Table.Body>
                 </Table>
             </div>
@@ -159,21 +161,50 @@ const PatientPage = () => {
           `Unhandled discriminated union member: ${JSON.stringify(value)}`
         );
       };
+    
+
+      const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+    const [error, setError] = React.useState<string | undefined>();
+
+    const openModal = (): void => {
+    console.log(`modalOpen:`, modalOpen);
+    setModalOpen(true);
+    console.log(`modalOpen:`, modalOpen);
+  };
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
+
+  const submitNewEntry = ():void => {
+      //this will send the new entry to the BE endpoitn
+      console.log('to do: Send the data to BE');
+  };
 
     return (
         <div>
             <Container>
+            <h3>Patient information</h3>
+            </Container>
             <h1>{patient.name} {patient.gender=='male' && <Icon name='mars'/>} {patient.gender=='female' && <Icon name='venus'/>}</h1>
-            ssn: {patient.ssn}<br></br>
-            occupation: {patient.occupation}
-            <br></br><br></br>
+            <p style={{marginBottom:0}}>Social security number {patient.ssn}</p>
+            <p style={{marginTop:0}}>Occupation: {patient.occupation} </p>
+            <Button onClick={() => openModal()} style={{marginTop:20, marginBottom:30}} secondary>Add new entry</Button>
             {patient.entries.length>0 && <div style={{marginBottom:10}}><h4><b>Entries</b></h4></div>}
             {patient.entries.map(entry => 
-                <p key={entry.id}>
+                <div key={entry.id}>
                     <EntryDetails entry={entry} />
-                </p>
+                </div>
             )}
-            </Container>
+        <AddEntryModal
+          modalOpen={modalOpen}
+          onSubmit={submitNewEntry}
+          error={error}
+          onClose={closeModal}
+      />
+ 
         </div>
     );
 };
