@@ -1,28 +1,58 @@
 import React from "react";
 import { Grid, Button } from "semantic-ui-react";
-import { Field, Formik, Form } from "formik";
+import { Field, Formik } from "formik";
+import { Form } from "semantic-ui-react";
+import { TextField } from "../AddPatientModal/FormField";
+import { EntryFormValues, Gender, EntryType } from "../types";
 
-import { TextField, SelectField, GenderOption } from "../AddPatientModal/FormField";
-import { EntryFormValues, Gender } from "../types";
-
-
-/*
- * use type Patient, but omit id and entries,
- * because those are irrelevant for new patient object.
- */
-
-//export type PatientFormValues = Omit<Patient, "id" | "entries">;
 
 interface Props {
   onSubmit: (values: EntryFormValues) => void;
   onCancel: () => void;
 }
 
-const genderOptions: GenderOption[] = [
-  { value: Gender.Male, label: "Male" },
-  { value: Gender.Female, label: "Female" },
-  { value: Gender.Other, label: "Other" }
-];
+// const genderOptions: GenderOption[] = [
+//   { value: Gender.Male, label: "Male" },
+//   { value: Gender.Female, label: "Female" },
+//   { value: Gender.Other, label: "Other" }
+// ];
+
+
+// structure of a single option
+type EntryTypeOption = {
+    value: EntryType;
+    label: string;
+  };
+  
+  // props for select field component
+  type SelectFieldProps = {
+    name: string;
+    label: string;
+    options: EntryTypeOption[];
+  };
+
+const entryTypeOptions: EntryTypeOption[] = [
+    { value: EntryType.HealthCheck, label: "Health check" },
+    { value: EntryType.Hospital, label: "Hospital" },
+    { value: EntryType.OccupationalHealthcare, label: "Occupational health care" }
+  ];
+
+const SelectField = ({
+    name,
+    label,
+    options
+  }: SelectFieldProps) => (
+    <Form.Field>
+      <label>{label}</label>
+      <Field as="select" name={name} className="ui dropdown">
+        {options.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.label || option.value}
+          </option>
+        ))}
+      </Field>
+    </Form.Field>
+  );
 
 export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
     return (
@@ -45,7 +75,7 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
             errors.specialist = requiredError;
           }
           if (!values.description) {
-            errors.dateOfBirth = requiredError;
+            errors.description = requiredError;
           }
           if (!values.healthCheckRating) {
             errors.healthCheckRating = requiredError;
@@ -56,6 +86,11 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
         {({ isValid, dirty }) => {
           return (
             <Form className="form ui">
+              <SelectField
+                label="Entry type"
+                name="entryType"
+                options={entryTypeOptions}
+              />
               <Field
                 label="Date"
                 placeholder="YYYY-MM-DD"
@@ -79,11 +114,6 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
                 placeholder="0 / 1"
                 name="healthCheckRating"
                 component={TextField}
-              />
-              <SelectField
-                label="Gender"
-                name="gender"
-                options={genderOptions}
               />
               <Grid>
                 <Grid.Column floated="left" width={5}>
